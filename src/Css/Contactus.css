@@ -1,75 +1,167 @@
-/* Container Styles */
-.contact-card {
-    width: 300px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 16px;
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    margin: 20px auto;
-    background-color: #fff;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    animation: fadeIn 1s ease;
-  }
+/* General Section Styling */
+.ftco-section {
+  padding: 4em 0;
+ 
+  color: #fff;
+}
+
+.contact-name h2{
+  color: #000000;
+}
+ 
+/* Heading Styles */
+.heading-section {
+  font-size: 32px;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 20px;
+}
+
+/* Contact Form Wrapper */
+.contact-wrap {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+
+.contact-wrap h3 {
+  color: #333;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Form Inputs */
+.form-control {
+  border-radius: 25px;
+  padding: 12px 20px;
+  border-color: #6a11cb;
+  transition: all 0.3s ease-in-out;
+}
+ 
+/* Submit Button */
+.submiting .btn-primary {
   
-  /* Scale on hover */
-  .contact-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border: none;
+  padding: 12px 30px;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  border-radius: 50px;
+  transition: all 0.3s ease-in-out;
+}
+
+ 
+/* Info Box Styles */
+.info-wrap {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 40px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.info-wrap h3 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.dbox {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+ 
+ 
+.dbox .text {
+  margin-left: 15px;
+  font-size: 16px;
+}
+
+.dbox .text a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.dbox .text a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .contact-wrap, .info-wrap {
+    padding: 30px;
   }
-  
-  /* Image Styling */
-  .card-image {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 16px;
-    animation: zoomIn 0.5s ease;
+
+  .heading-section {
+    font-size: 28px;
   }
+}
+
+
+ 
+/* Icon Styling */
+.dbox .icon {
+   
+  height: 50px;
   
-  /* Text Styling */
-  .company-name {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: #fff;
+  transition: all 0.3s ease-in-out;
+   
+}
+
+ 
+
+/* Text next to icons */
+.dbox .text {
+  margin-left: 15px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #fff;
+}
+
+.dbox .text p {
+  margin-bottom: 0;
+}
+
+.dbox .text a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.dbox .text a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dbox .icon {
+    width: 40px;
+    height: 40px;
     font-size: 18px;
-    font-weight: bold;
-    margin: 8px 0;
   }
-  
-  .address {
+
+  .dbox .text {
     font-size: 14px;
-    color: #555;
-    margin-bottom: 16px;
   }
-  
-  .contact-numbers {
-    font-size: 14px;
-    color: #333;
-  }
-  
-  .contact-number {
-    margin: 4px 0;
-  }
-  
-  /* Fade-in Animation */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  /* Zoom-in Animation */
-  @keyframes zoomIn {
-    from {
-      transform: scale(0.8);
-      opacity: 0;
-    }
-    to {
-      transform: scale(1);
-      opacity: 1;
-    }
-  }  
+}
+
+ .emaail{
+  text-align: start;
+ }
+
+ .naame{
+  text-align: start;
+ }

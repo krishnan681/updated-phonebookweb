@@ -17,10 +17,14 @@ const UserProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editableDetails, setEditableDetails] = useState(userData || {});
   const [error, setError] = useState("");
+
+
   const [showModal, setShowModal] = useState(false);
   const [message, setMessage] = useState("");
   const toggleModal = () => setShowModal(!showModal);
   const [selectedPrice, setSelectedPrice] = useState(null);
+
+  
 
   const [profileImage, setProfileImage] = useState(
     userData?.profileImage || null
@@ -239,9 +243,26 @@ const UserProfile = () => {
     "https://cdn.pixabay.com/photo/2021/07/25/08/03/account-6491185_1280.png";
 
   // Check if userData is available before rendering
-  if (!userData) {
-    return <div>Loading...</div>;
-  }
+   
+
+
+
+
+  //for opening upi app
+
+  const handleUPIPayment = (amount) => {
+    const payeeVPA = "naveenbsc.mca1518-1@okicici"; // Replace with your actual UPI ID
+    const payeeName = "Signpost";
+    const transactionNote = "Subscription Payment";
+  
+    // Construct UPI deep link
+    const upiUrl = `upi://pay?pa=${payeeVPA}&pn=${encodeURIComponent(
+      payeeName
+    )}&tn=${encodeURIComponent(transactionNote)}&am=${amount}&cu=INR`;
+  
+    // Open Google Pay or any UPI app
+    window.location.href = upiUrl;
+  };
 
   return (
     <div className="user-profile">
@@ -319,7 +340,7 @@ const UserProfile = () => {
                     <h3>
                       {userData.businessname ||
                         userData.person ||
-                        "Business Name Not Available"}
+                        "NA"}
                     </h3>
                     <p style={{ color: "black" }}>
                       {userData.product || "Product Info Not Available"}
@@ -347,35 +368,55 @@ const UserProfile = () => {
                           &times;
                         </span>
                         <div className="membership-card">
-        <div className="memcard-header">
-        <img src={bookLogo} alt="CompanyLogo" className="CompanyLogo   "  />
-            SIGNPOSTPHONEBOOK
-            <img src={bookLogo} alt="CompanyLogo" className="CompanyLogo2"/>
-        </div>
-        <p className="membership-title"  style={{color:"black", fontSize:20 }}>Membership Card</p>
-        <div className="memcard-content">
-        <img
-  src={
-    userData?.profileImage
-      ? `https://signpostphonebook.in/${userData.profileImage}`
-      : "https://cdn.pixabay.com/photo/2021/07/25/08/03/account-6491185_1280.png"
-  }
-  alt="Profile"
-  className="memprofile-img"
-/>
-            <div className="memuser-details">
-                <h2>{userData.businessname || userData.person || ""}</h2>
-                <p><strong>Valid Until:</strong> Date Not Available</p>
-                <p><strong>Address:</strong>{userData.address}</p>
-            </div>
-        </div>
-        <div className="memfooter">
-            This card is valid for 5 years from the date of issue.<br/>
-            46, Sidco Industrial Estate, Coimbatore - 641021
-        </div>
-    </div>
-
-
+                          <div className="memcard-header">
+                            <img
+                              src={bookLogo}
+                              alt="CompanyLogo"
+                              className="CompanyLogo   "
+                            />
+                            SIGNPOSTPHONEBOOK
+                            {/* <img
+                              src={bookLogo}
+                              alt="CompanyLogo"
+                              className="CompanyLogo2"
+                            /> */}
+                          </div>
+                          <p
+                            className="membership-title"
+                            style={{ color: "black", fontSize: 20 }}
+                          >
+                            Membership Card
+                          </p>
+                          <div className="memcard-content">
+                            <img
+                              src={
+                                userData?.profileImage
+                                  ? `https://signpostphonebook.in/${userData.profileImage}`
+                                  : "https://cdn.pixabay.com/photo/2021/07/25/08/03/account-6491185_1280.png"
+                              }
+                              alt="Profile"
+                              className="memprofile-img"
+                            />
+                            <div className="memuser-details">
+                              <h2>
+                                {userData.businessname || userData.person || ""}
+                              </h2>
+                              <p>
+                                <strong>Valid Until:</strong> Date Not Available
+                              </p>
+                              <p>
+                                <strong>Address:</strong>
+                                {userData.address}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="memfooter">
+                            This card is valid for 5 years from the date of
+                            issue.
+                            <br />
+                            46, Sidco Industrial Estate, Coimbatore - 641021
+                          </div>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -496,6 +537,7 @@ const UserProfile = () => {
             </div>
           </div>
         )}
+        
         {activeTab === "sub" && (
           <div className="sub-container ">
             {selectedPrice === null ? (
@@ -697,10 +739,11 @@ const UserProfile = () => {
                       </Button>
                       <Button
                         variant="success"
-                        onClick={() => setShowModal(true)}
+                        onClick={() => handleUPIPayment(selectedPrice)}
                       >
                         Pay ₹{selectedPrice}
                       </Button>
+ 
                     </div>
                   </div>
 
@@ -738,9 +781,9 @@ const UserProfile = () => {
 
             {!isEditing ? (
               <>
-                <p>Change Password</p>
+                {/* <p>Change Password</p>
                 <p>Manage Notifications</p>
-                <p>Privacy Settings</p>
+                <p>Privacy Settings</p> */}
 
                 {/* Button to Enable Edit Mode */}
                 <Button variant="primary" onClick={toggleEdit}>

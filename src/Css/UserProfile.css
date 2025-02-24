@@ -4,26 +4,12 @@
   width: auto;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 .profile-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 20px; /* Adjust the gap between elements */
+  gap: 10px; /* Adjust the gap between elements */
 }
 
 .profile-info {
@@ -117,13 +103,7 @@
   background-color: #ffffff;
 }
 
-.tab-content {
-  background: rgb(194, 91, 91);
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
+ 
 .subscription-card {
   padding: 15px;
   margin: 10px 0;
@@ -133,44 +113,44 @@
   text-align: center;
   font-size: 16px;
 }
+ 
 
-/* Responsive Sidebar */
+/* Responsive Sidebar Toggle Button */
 .toggle-button {
-  display: none;
+  display: none; /* Hidden by default */
+  position: absolute; /* Ensure it stays in the top-left corner */
+  top: 15px; /* Adjust position */
+  left: 15px;
   background: #2c3e50;
   color: white;
   border: none;
   font-size: 24px;
   padding: 10px;
-  position: relative;
-  /* top: 25px; */
-  /* left: 15px; */
   cursor: pointer;
   z-index: 1000;
 }
 
+/* Show the toggle button on small screens */
 @media (max-width: 768px) {
   .toggle-button {
-    /* z-index: 1000; */
-    display: block;
+    display: block; /* Show button */
   }
 
   .sidebar {
     position: fixed;
-    left: -250px;
+    left: -250px; /* Start hidden */
     height: 100%;
     width: 250px;
-    transform: translateX(0);
+    background: #2c3e50;
+    transition: transform 0.3s ease-in-out;
   }
 
   .sidebar.open {
-    z-index: 1000;
-    transform: translateX(273px);
+    transform: translateX(250px); /* Ensure it moves exactly the sidebar width */
   }
 
   .content {
-    z-index: 999;
-    margin-left: 0;
+    margin-left: 0; /* Keep main content static */
   }
 }
 
@@ -291,6 +271,24 @@
 .profile-actions i {
   font-size: 18px;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* About Details */
 .about-details {
@@ -671,63 +669,12 @@ a.yellow:hover {
 }
 
 
+ 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* setting cs */
-.tab-content {
-  background: #ffffff;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-/* Settings Section */
-.tab-content h2 {
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: #2c3e50;
-  margin-bottom: 20px;
-}
-
-.tab-content p {
-  font-size: 1rem;
-  color: #7f8c8d;
-  margin-bottom: 15px;
-}
-
+ 
+ 
 /* Edit Form */
 .about-edit-form {
   display: flex;
@@ -796,9 +743,7 @@ a.yellow:hover {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .tab-content {
-    padding: 20px;
-  }
+   
 
   .about-edit-form {
     padding: 15px;

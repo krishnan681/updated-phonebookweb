@@ -2,13 +2,17 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../Css/NearbyPromotion.css";
 import { FaPencilAlt } from "react-icons/fa";
+import { useAuth } from "./Auth"; // Import useAuth
+import { faL } from "@fortawesome/free-solid-svg-icons";
 
 const Nearbypromotion = () => {
+  const { userData, setUserData } = useAuth(); // Fetch userData from Auth context
   const [pincodeInput, setPincodeInput] = useState("");
   const [selectAll, setSelectAll] = useState(false);
   const [clrBtn, setClrBtn] = useState(false);
   const [datas, setData] = useState([]);
   const [showresults, setShowresults] = useState(false);
+  const [noRecord, setNoRecord] = useState(false);
   const [selectedBusinesses, setSelectedBusinesses] = useState([]);
   const [selectedPrefix, setSelectedPrefix] = useState(null);
   const maxLength = 290;
@@ -58,12 +62,19 @@ const Nearbypromotion = () => {
     setLoading(true);
     axios
       .get(
-        `https://signpostphonebook.in/testprefix.php?pincode=${pincodeInput}&prefix=${prefix}`
+        `https://signpostphonebook.in/get_details_based_on_prefix_pincode.php?pincode=${pincodeInput}&prefix=${prefix}`
       )
       .then((response) => {
-        setData(response.data);
-        setClrBtn(true);
-        setShowresults(true);
+        if (response.data?.[0] === "No records found.") {
+          setNoRecord(true);
+          setClrBtn(true);
+          setData([]);
+          setShowresults(false);
+        } else {
+          setData(response.data);
+          setClrBtn(true);
+          setShowresults(true);
+        }
       })
       .catch((error) => console.error("Error fetching businesses:", error))
       .finally(() => setLoading(false));
@@ -77,6 +88,7 @@ const Nearbypromotion = () => {
     );
   };
 
+
   const clearItems = () => {
     setPincodeInput("");
     setPrefix("");
@@ -86,27 +98,41 @@ const Nearbypromotion = () => {
     setSelectedBusinesses([]);
     setClrBtn(!clrBtn);
     setShowresults(false);
+    setNoRecord(false);
   };
+
   const sendBatchSMS = () => {
     if (selectedBusinesses.length === 0) {
-      window.alert("No clients selected!");
+      alert("No clients selected!");
       return;
     }
 
-    const mobileNumbers = selectedBusinesses.map((client) => client.mobileno);
-    try {
-      const recipients = mobileNumbers.join(",");
-      const smsUri = `sms:${recipients}?body=${encodeURIComponent(
-        customMessage
-      )}`;
-      window.location.href = smsUri;
-      handleSelectAllChange();
-    } catch (error) {
-      console.error("Error opening SMS application:", error.message);
-      window.alert(
-        "An error occurred while opening the SMS application. Please try again."
-      );
-    }
+    const currentDate = new Date().toISOString().split("T")[0];
+
+    const postData = {
+      user_name: userData.bussinessname || userData.person || "Unknown",
+      date: currentDate,
+      pincode: pincodeInput.trim(),
+      product: "",
+      promotion_from: "Nearby Promotion",
+      selected_count: selectedBusinesses.length,
+    };
+
+    axios
+      .post(
+        "https://signpostphonebook.in/promotion_app/promotion_appliaction.php",
+        postData
+      )
+      .then((response) => {
+        console.log(response.data.Message);
+      })
+      .catch((error) => console.error("Error sending data:", error));
+
+    const selectedNumbers = selectedBusinesses.map((client) => client.mobileno);
+    const recipients = selectedNumbers.join(",");
+    const smsUri = `sms:${recipients}?body=${encodeURIComponent(customMessage)}`;
+
+    window.location.href = smsUri;
   };
 
   return (
@@ -118,8 +144,7 @@ const Nearbypromotion = () => {
               <strong>NEARBY PROMOTION</strong>
             </span>{" "}
             <br />
-            {`Send Text messages to Mobile Users in desired Pincode Area`}{" "}
-            <br />
+            {`Send Text messages to Mobile Users in desired Pincode Area`}<br />
             {`1) First edit / create message to be sent. Minimum 1 Count (145 characters), Maximum 2 counts (290 characters)`}
             <br />
             {`2) Select type of Recipient  (Males / Females / Business Firms)`}
@@ -142,21 +167,14 @@ const Nearbypromotion = () => {
               </span>{" "}
             </strong>
           </label>
-          <div
-            className="message-box-container"
-            style={{ position: "relative", width: "100%" }}
-          >
+          <div className="message-box-container" style={{ position: "relative", width: "100%" }}>
             <textarea
               className="message-box"
               value={customMessage}
               onChange={(e) => setCustomMessage(e.target.value)}
               rows={4}
               placeholder="Type your message here..."
-              style={{
-                width: "100%",
-                padding: "10px",
-                boxSizing: "border-box",
-              }}
+              style={{ width: "100%", padding: "10px", boxSizing: "border-box" }}
             ></textarea>
             <div
               className="char-counter"
@@ -174,40 +192,34 @@ const Nearbypromotion = () => {
           <label>
             <strong>Select Recipients Type :</strong>{" "}
           </label>
-          <div className="prefix-container">
-            <div className="radio-group" aria-required>
-              <label htmlFor="Mr">
-                <input
-                  type="radio"
-                  value="Mr."
-                  checked={prefix === "Mr."}
-                  onChange={(e) => setPrefix(e.target.value)}
-                />
-                &nbsp;Males
-              </label>
-            </div>
-            <div className="radio-group">
-              <label htmlFor="Mr">
-                <input
-                  type="radio"
-                  value="Ms."
-                  checked={prefix === "Ms."}
-                  onChange={(e) => setPrefix(e.target.value)}
-                />
-                &nbsp;Females
-              </label>
-            </div>
-            <div className="radio-group">
-              <label htmlFor="Mr">
-                <input
-                  type="radio"
-                  value="M/s."
-                  checked={prefix === "M/s."}
-                  onChange={(e) => setPrefix(e.target.value)}
-                />
-                &nbsp;Business Firms
-              </label>
-            </div>
+          <div className="radio-group">
+            <label>
+              <input
+                type="radio"
+                value="Mr."
+                checked={prefix === "Mr."}
+                onChange={(e) => setPrefix(e.target.value)}
+              />
+              &nbsp;Males
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="Ms."
+                checked={prefix === "Ms."}
+                onChange={(e) => setPrefix(e.target.value)}
+              />
+              &nbsp;Females
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="M/s."
+                checked={prefix === "M/s."}
+                onChange={(e) => setPrefix(e.target.value)}
+              />
+              &nbsp;Business Firms
+            </label>
           </div>
         </div>
         <div>
@@ -226,17 +238,11 @@ const Nearbypromotion = () => {
             />
           </div>
           {clrBtn ? (
-            <button
-              className="btn btn-primary search_Button"
-              onClick={clearItems}
-            >
+            <button className="btn btn-primary search_Button" onClick={clearItems}>
               Clear
             </button>
           ) : (
-            <button
-              className="btn btn-primary search_Button"
-              onClick={fetchBusinesses}
-            >
+            <button className="btn btn-primary search_Button" onClick={fetchBusinesses}>
               Search
             </button>
           )}
@@ -272,14 +278,9 @@ const Nearbypromotion = () => {
                 </label>
               </div>
               <div>
-                <input
-                  type="checkbox"
-                  onChange={handleSelectAllChange}
-                  checked={selectAll}
-                />
+                <input type="checkbox" onChange={handleSelectAllChange} checked={selectAll} />
               </div>
             </div>
-
             <button className="btn btn-primary mb-2" onClick={sendBatchSMS}>
               Send SMS
             </button>
@@ -292,7 +293,7 @@ const Nearbypromotion = () => {
                     <div className="card" key={item.id}>
                       <div className="card-details">
                         <p className="heading-text">
-                          <strong>{item.businessname}</strong>
+                          <strong>{item.businessname || item.person}</strong>
                         </p>
                         <p className="card-para">{item.product}</p>
                       </div>
@@ -315,7 +316,11 @@ const Nearbypromotion = () => {
           ) : (
             <div className="container defaultContainer mt-2">
               <p>
-                <strong>Your Result Will be Shown Here!!..</strong>
+                {noRecord ? (
+                  <strong>No Records found</strong>
+                ) : (
+                  <strong>Your Result Will be Shown Here!!..</strong>
+                )}
               </p>
             </div>
           )}

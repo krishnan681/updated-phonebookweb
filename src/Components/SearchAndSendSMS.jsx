@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "../Css/SearchAndSendSms.css";
 import { FaPencilAlt } from "react-icons/fa";
+import { useAuth } from "./Auth"; // Import useAuth
+import axios from "axios";
+
 
 export default function SearchAndSendSMS() {
+    const { userData, setUserData } = useAuth(); // Fetch userData from Auth context
   const [data, setData] = useState([]);
   const [productInput, setProductInput] = useState("");
   const [cityInput, setCityInput] = useState("");
@@ -113,13 +117,32 @@ export default function SearchAndSendSMS() {
       window.alert("No clients selected!");
       return;
     }
-
+  
+    const currentDate = new Date().toISOString().split("T")[0];
+  
+    const postData = {
+      user_name: userData.bussinessname || userData.person || "Unknown",
+      date: currentDate,
+      pincode: "",
+      product: productInput.trim(),
+      promotion_from: "CatagoryWise Promotion",
+      selected_count: selectedClients.length,
+    };
+  
+    axios
+      .post(
+        "https://signpostphonebook.in/promotion_app/promotion_appliaction.php",
+        postData
+      )
+      .then((response) => {
+        console.log(response.data.Message);
+      })
+      .catch((error) => console.error("Error sending data:", error));
+  
     const mobileNumbers = selectedClients.map((client) => client.mobileno);
     try {
       const recipients = mobileNumbers.join(",");
-      const smsUri = `sms:${recipients}?body=${encodeURIComponent(
-        customMessage
-      )}`;
+      const smsUri = `sms:${recipients}?body=${encodeURIComponent(customMessage)}`;
       window.location.href = smsUri;
     } catch (error) {
       console.error("Error opening SMS application:", error.message);
@@ -128,6 +151,7 @@ export default function SearchAndSendSMS() {
       );
     }
   };
+  
 
   return (
     <div className="productCityMainDiv">

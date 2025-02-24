@@ -1682,3 +1682,960 @@ export default UserProfile;
   position: relative;
   left: 30px;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useAuth } from "./Auth"; // Assuming this is your auth context
+import moment from "moment"; // Import moment.js
+import "../Css/UserProfile.css";
+import { Modal, Button, Form } from "react-bootstrap";
+import bookLogo from "../assets/images/book_logo.png";
+
+const UserProfile = () => {
+  const [activeTab, setActiveTab] = useState("general");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { userData, setUserData } = useAuth(); // Fetch userData from Auth context
+  const [teamData, setTeamData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [referralCount, setReferralCount] = useState(0);
+  const [taskCount, setTaskCount] = useState(""); // Task count
+  const [isEditing, setIsEditing] = useState(false);
+  const [editableDetails, setEditableDetails] = useState(userData || {});
+  const [error, setError] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [message, setMessage] = useState("");
+  const toggleModal = () => setShowModal(!showModal);
+  const [selectedPrice, setSelectedPrice] = useState(null);
+
+  // Subscription state
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [expiryDate, setExpiryDate] = useState(null);
+
+  useEffect(() => {
+    if (userData.subscription_date) {
+      const subscriptionDate = moment(userData.subscription_date, "DD/MM/YYYY h:mm A");
+      const today = moment();
+      const durationInDays =
+        userData.subscription_plan === "1 Week" ? 7 :
+        userData.subscription_plan === "1 Month" ? 30 :
+        userData.subscription_plan === "1 Year" ? 365 : 0;
+
+      const calculatedExpiryDate = subscriptionDate.clone().add(durationInDays, "days");
+
+      if (today.isBefore(calculatedExpiryDate)) {
+        setIsSubscribed(true);
+        setExpiryDate(calculatedExpiryDate.format("DD/MM/YYYY h:mm A"));
+      }
+    }
+  }, [userData]);
+
+  return (
+    <div className="sub-container">
+      {activeTab === "sub" && (
+        <div className="sub-container">
+          {isSubscribed ? (
+            // Show Subscription Active Card
+            <div className="subscribed-card">
+              <h3>You're Subscribed!</h3>
+              <p className="plan-name">{userData.subscription_plan} Plan</p>
+              <p className="plan-price">₹{userData.subscription_amount} / {userData.subscription_plan}</p>
+              <p>Subscription valid until: {expiryDate}</p>
+              <Button variant="danger" onClick={() => alert("Cancel Subscription Coming Soon!")}>
+                Cancel Subscription
+              </Button>
+            </div>
+          ) : (
+            // Show Subscription Plans
+            <div className="tab-content-3">
+              <div className="sub-tab">
+                {/* Weekly Plan */}
+                <div className="starter-plan-card">
+                  <div className="plan-header">
+                    <h5>1 Week Trial Pack</h5>
+                    <p className="plan-price">₹20</p>
+                  </div>
+                  <div className="plan-body">
+                    <ul className="plan-features">
+                      <li>Duration: 7 Days</li>
+                      <li>Bulk Messages for 7 days</li>
+                      <li>Free Support</li>
+                    </ul>
+                    <Button variant="success" onClick={() => setSelectedPrice(20)}>
+                      Buy Now
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Monthly Plan */}
+                <div className="monthly-plan-card">
+                  <div className="plan-header">
+                    <h5>1 Month Pack</h5>
+                    <p className="plan-price">₹200</p>
+                  </div>
+                  <div className="plan-body">
+                    <ul className="plan-features">
+                      <li>Referral Bonus: ₹50</li>
+                      <li>Free Support</li>
+                      <li>Sign-up Bonus: ₹20</li>
+                    </ul>
+                    <Button variant="success" onClick={() => setSelectedPrice(200)}>
+                      Buy Now
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Yearly Plan */}
+                <div className="yearly-plan-card">
+                  <div className="plan-header">
+                    <h5>1 Year Pack</h5>
+                    <p className="plan-price">₹1000</p>
+                  </div>
+                  <div className="plan-body">
+                    <ul className="plan-features">
+                      <li>Unlimited messages</li>
+                      <li>24/7 Support</li>
+                      <li>Sign-up Bonus: ₹20</li>
+                    </ul>
+                    <Button variant="success" onClick={() => setSelectedPrice(1000)}>
+                      Buy Now
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default UserProfile;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useState } from "react";
+
+// const ContactForm = () => {
+//   const [formData, setFormData] = useState({
+//     name: "",
+//     email: "",
+//     subject: "",
+//     message: "",
+//   });
+
+//   const [status, setStatus] = useState("");
+
+//   const handleChange = (e) => {
+//     setFormData({ ...formData, [e.target.name]: e.target.value });
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+  
+//     try {
+//       const response = await fetch("https://signpostphonebook.in/contact_email_messages.php", {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify(formData),
+//       });
+  
+//       const result = await response.text();
+//       console.log(result);
+  
+//       if (result === "success") {
+//         setStatus("Message sent successfully!");
+//         setFormData({ name: "", email: "", subject: "", message: "" });
+//       } else {
+//         setStatus("Failed to send message. Try again.");
+//       }
+//     } catch (error) {
+//       console.error("Error sending email:", error);
+//     }
+//   };
+  
+
+//   return (
+//     <div>
+//       <h2>Contact Us</h2>
+//       {status && <p>{status}</p>}
+//       <form onSubmit={handleSubmit}>
+//         <input type="text" name="name" placeholder="Your Name" value={formData.name} onChange={handleChange} required />
+//         <input type="email" name="email" placeholder="Your Email" value={formData.email} onChange={handleChange} required />
+//         <input type="text" name="subject" placeholder="Subject" value={formData.subject} onChange={handleChange} required />
+//         <textarea name="message" placeholder="Your Message" value={formData.message} onChange={handleChange} required />
+//         <button type="submit">Send Message</button>
+//       </form>
+//     </div>
+//   );
+// };
+
+// export default ContactForm;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React, { useState } from "react";
+import { Container, Row, Col, Form, Button, Modal } from "react-bootstrap";
+import emailjs from "emailjs-com";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "../Css/Contactus.css";
+
+const ContactCard = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+
+  const [showModal, setShowModal] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" });
+  };
+
+  const handleBlur = (e) => {
+    setTouched({ ...touched, [e.target.name]: true });
+    validateForm();
+  };
+
+  const validateForm = () => {
+    let newErrors = {};
+    if (!formData.name.trim()) newErrors.name = "Full Name is required";
+    if (!formData.email.trim()) newErrors.email = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Invalid email format";
+    if (!formData.subject.trim()) newErrors.subject = "Subject is required";
+    if (!formData.message.trim()) newErrors.message = "Message is required";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    emailjs
+      .send(
+        "YOUR_SERVICE_ID",
+        "YOUR_TEMPLATE_ID",
+        formData,
+        "YOUR_PUBLIC_KEY"
+      )
+      .then(
+        (response) => {
+          console.log("Email Sent!", response.status, response.text);
+          setShowModal(true);
+          setFormData({ name: "", email: "", subject: "", message: "" });
+          setTouched({});
+        },
+        (error) => {
+          console.log("Failed to send email:", error);
+        }
+      );
+  };
+
+  return (
+    <section className="ftco-section">
+      <Container className="fullcontent">
+        <Row className="justify-content-center">
+          <Col md={6} className="text-center mb-5 contact-name">
+            <h2 className="heading-section">Contact Us</h2>
+          </Col>
+        </Row>
+        <Row className="justify-content-center">
+          <Col md={12}>
+            <div className="wrapper">
+              <Row className="no-gutters">
+                <Col lg={8} md={7} className="order-md-last d-flex align-items-stretch">
+                  <div className="contact-wrap w-100 p-md-5 p-4">
+                    <h3 className="mb-4">Get in touch</h3>
+                    <Form id="contactForm" name="contactForm" className="contactForm" onSubmit={handleSubmit}>
+                      <Row>
+                        <Col md={6}>
+                          <Form.Group className="naame mb-3">
+                            <Form.Label>Full Name</Form.Label>
+                            <Form.Control 
+                              type="text" 
+                              name="name" 
+                              value={formData.name}
+                              onChange={handleChange} 
+                              onBlur={handleBlur}
+                              placeholder="Name" 
+                              isInvalid={touched.name && !!errors.name}
+                            />
+                            <Form.Control.Feedback type="invalid">{errors.name}</Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
+                        <Col md={6}>
+                          <Form.Group className="emaail mb-3">
+                            <Form.Label>Email Address</Form.Label>
+                            <Form.Control 
+                              type="email" 
+                              name="email" 
+                              value={formData.email}
+                              onChange={handleChange} 
+                              onBlur={handleBlur}
+                              placeholder="Email" 
+                              isInvalid={touched.email && !!errors.email}
+                            />
+                            <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
+                        <Col md={12}>
+                          <Form.Group className="mb-3">
+                            <Form.Label>Subject</Form.Label>
+                            <Form.Control 
+                              type="text" 
+                              name="subject" 
+                              value={formData.subject}
+                              onChange={handleChange} 
+                              onBlur={handleBlur}
+                              placeholder="Subject" 
+                              isInvalid={touched.subject && !!errors.subject}
+                            />
+                            <Form.Control.Feedback type="invalid">{errors.subject}</Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
+                        <Col md={12}>
+                          <Form.Group className="mb-3">
+                            <Form.Label>Message</Form.Label>
+                            <Form.Control 
+                              as="textarea" 
+                              name="message" 
+                              rows={4} 
+                              value={formData.message}
+                              onChange={handleChange} 
+                              onBlur={handleBlur}
+                              placeholder="Message" 
+                              isInvalid={touched.message && !!errors.message}
+                            />
+                            <Form.Control.Feedback type="invalid">{errors.message}</Form.Control.Feedback>
+                          </Form.Group>
+
+                          <Form.Group className="submiting mb-3">
+                          <Button type="submit" className="btn btn-primary">Send Message</Button>
+                          <div className="submitting"></div>
+                        </Form.Group>
+                        </Col>
+                      </Row>
+                    </Form>
+                  </div>
+                </Col>
+                <Col lg={4} md={5} className="d-flex align-items-stretch">
+                <div className="info-wrap bg-primary w-100 p-md-5 p-4">
+                  <h3>Let's get in touch</h3>
+                  <p className="mb-4">We're open for any suggestion or just to have a chat</p>
+                  <div className="dbox w-100 d-flex align-items-start">
+                    <div className="icon d-flex align-items-center justify-content-center">
+                      <i className="fas fa-map-marker-alt"></i> {/* Address Icon */}
+                    </div>
+                    <div className="text pl-3">
+                      <p><span>Address:</span> Signpost Celfone.In Technology <br /> 46, SIDCO Industrail Estate, Coimbatore - 641 021 </p>
+                    </div>
+                  </div>
+                  <div className="dbox w-100 d-flex align-items-center">
+                    <div className="icon d-flex align-items-center justify-content-center">
+                      <i className="fas fa-phone-alt"></i> {/* Phone Icon */}
+                    </div>
+                    <div className="text pl-3">
+                      <p><span>Phone : 9786889092</span> <a href="tel://9786889092"></a> | <span> 9843657564 </span> <a href="tel://9843657564"></a> </p>
+                    </div>
+                  </div>
+                  <div className="dbox w-100 d-flex align-items-center">
+                    <div className="icon d-flex align-items-center justify-content-center">
+                      <i className="fas fa-envelope"></i> {/* Email Icon */}
+                    </div>
+                    <div className="text pl-3">
+                      <p><span>Email:</span>  <a href="mailto:signpostcelfon.intech@gmail.com">signpostcelfon.intech@gmail.com</a></p>
+                    </div>
+                  </div>
+                  <div className="dbox w-100 d-flex align-items-center">
+                    <div className="icon d-flex align-items-center justify-content-center">
+                      <i className="fas fa-globe"></i> {/* Website Icon */}
+                    </div>
+                    <div className="text pl-3">
+                      <p><span>Website</span> <a href="#">signpostphonebook.in</a></p>
+                    </div>
+                  </div>
+                </div>
+              </Col>
+              </Row>
+            </div>
+          </Col>
+        </Row>
+      </Container>
+    </section>
+  );
+};
+
+export default ContactCard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useState, useEffect } from "react";
+// import axios from "axios";
+// import "../Css/NearbyPromotion.css";
+// import { FaPencilAlt } from "react-icons/fa";
+
+// const Nearbypromotion = () => {
+//   const [pincodeInput, setPincodeInput] = useState("");
+//   const [selectAll, setSelectAll] = useState(false);
+//   const [clrBtn, setClrBtn] = useState(false);
+//   const [datas, setData] = useState([]);
+//   const [showresults, setShowresults] = useState(false);
+//   const [selectedBusinesses, setSelectedBusinesses] = useState([]);
+//   const [selectedPrefix, setSelectedPrefix] = useState(null);
+//   const maxLength = 290;
+//   const [customMessage, setCustomMessage] = useState(
+//     "I Saw Your Listing in SIGNPOST PHONE BOOK. I am Interested in your Products. Please Send Details/Call Me. (Sent Thro Signpost PHONE BOOK)"
+//   );
+//   const [prefix, setPrefix] = useState("");
+//   const [loading, setLoading] = useState(false);
+
+//   const handleSelectAllChange = () => {
+//     if (selectAll) {
+//       setSelectedBusinesses([]);
+//     } else {
+//       setSelectedBusinesses(datas);
+//     }
+//     setSelectAll(!selectAll);
+//   };
+
+//   const fetchData = async () => {
+//     try {
+//       const response = await fetch(
+//         "https://signpostphonebook.in/client_fetch.php"
+//       );
+//       if (!response.ok)
+//         throw new Error(`HTTP Error! Status: ${response.status}`);
+//       const jsonResponse = await response.json();
+//       if (Array.isArray(jsonResponse)) {
+//         setData(jsonResponse.sort((a, b) => b.id - a.id));
+//       } else {
+//         alert("Unexpected response from server.");
+//       }
+//     } catch (error) {
+//       alert("Failed to load data: " + error.message);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchData();
+//   }, []);
+
+//   const fetchBusinesses = () => {
+//     if (!pincodeInput || !prefix) {
+//       alert("Please enter a valid pincode and select a prefix.");
+//       return;
+//     }
+
+//     setLoading(true);
+//     axios
+//       .get(
+//         `https://signpostphonebook.in/testprefix.php?pincode=${pincodeInput}&prefix=${prefix}`
+//       )
+//       .then((response) => {
+//         setData(response.data);
+//         setClrBtn(true);
+//         setShowresults(true);
+//       })
+//       .catch((error) => console.error("Error fetching businesses:", error))
+//       .finally(() => setLoading(false));
+//   };
+
+//   const handleCheckboxChange = (client) => {
+//     setSelectedBusinesses((prev) =>
+//       prev.includes(client)
+//         ? prev.filter((item) => item !== client)
+//         : [...prev, client]
+//     );
+//   };
+
+//   const clearItems = () => {
+//     setPincodeInput("");
+//     setPrefix("");
+//     setSelectedPrefix(null);
+//     fetchData();
+//     setSelectAll(false);
+//     setSelectedBusinesses([]);
+//     setClrBtn(!clrBtn);
+//     setShowresults(false);
+//   };
+//   const sendBatchSMS = () => {
+//     if (selectedBusinesses.length === 0) {
+//       window.alert("No clients selected!");
+//       return;
+//     }
+
+//     const mobileNumbers = selectedBusinesses.map((client) => client.mobileno);
+//     try {
+//       const recipients = mobileNumbers.join(",");
+//       const smsUri = `sms:${recipients}?body=${encodeURIComponent(
+//         customMessage
+//       )}`;
+//       window.location.href = smsUri;
+//       handleSelectAllChange();
+//     } catch (error) {
+//       console.error("Error opening SMS application:", error.message);
+//       window.alert(
+//         "An error occurred while opening the SMS application. Please try again."
+//       );
+//     }
+//   };
+
+//   return (
+//     <div className="container">
+//       <div className="input-section">
+//         <div>
+//           <p>
+//             <span className="headingNearby">
+//               <strong>NEARBY PROMOTION</strong>
+//             </span>{" "}
+//             <br />
+//             {`Send Text messages to Mobile Users in desired Pincode Area`}{" "}
+//             <br />
+//             {`1) First edit / create message to be sent. Minimum 1 Count (145 characters), Maximum 2 counts (290 characters)`}
+//             <br />
+//             {`2) Select type of Recipient  (Males / Females / Business Firms)`}
+//             <br />
+//             {`3) Type Pincode Number of Targetted area for Promotion`}
+//             <br />
+//             {`4) For error free delivery of messages,  send in batches of 10 nos. each time`}
+//           </p>
+//           <label htmlFor="">
+//             <strong>
+//               Edit / Create Message :{" "}
+//               <span>
+//                 <FaPencilAlt
+//                   style={{
+//                     marginLeft: "10px",
+//                     cursor: "pointer",
+//                     color: "#000000",
+//                   }}
+//                 />
+//               </span>{" "}
+//             </strong>
+//           </label>
+//           <div
+//             className="message-box-container"
+//             style={{ position: "relative", width: "100%" }}
+//           >
+//             <textarea
+//               className="message-box"
+//               value={customMessage}
+//               onChange={(e) => setCustomMessage(e.target.value)}
+//               rows={4}
+//               placeholder="Type your message here..."
+//               style={{
+//                 width: "100%",
+//                 padding: "10px",
+//                 boxSizing: "border-box",
+//               }}
+//             ></textarea>
+//             <div
+//               className="char-counter"
+//               style={{
+//                 position: "absolute",
+//                 top: "2px",
+//                 right: "10px",
+//                 fontSize: "14px",
+//                 color: customMessage.length === maxLength ? "red" : "black",
+//               }}
+//             >
+//               {maxLength - customMessage.length} / {maxLength}
+//             </div>
+//           </div>
+//           <label>
+//             <strong>Select Recipients Type :</strong>{" "}
+//           </label>
+//           <div className="prefix-container">
+//             <div className="radio-group" aria-required>
+//               <label htmlFor="Mr">
+//                 <input
+//                   type="radio"
+//                   value="Mr."
+//                   checked={prefix === "Mr."}
+//                   onChange={(e) => setPrefix(e.target.value)}
+//                 />
+//                 &nbsp;Males
+//               </label>
+//             </div>
+//             <div className="radio-group">
+//               <label htmlFor="Mr">
+//                 <input
+//                   type="radio"
+//                   value="Ms."
+//                   checked={prefix === "Ms."}
+//                   onChange={(e) => setPrefix(e.target.value)}
+//                 />
+//                 &nbsp;Females
+//               </label>
+//             </div>
+//             <div className="radio-group">
+//               <label htmlFor="Mr">
+//                 <input
+//                   type="radio"
+//                   value="M/s."
+//                   checked={prefix === "M/s."}
+//                   onChange={(e) => setPrefix(e.target.value)}
+//                 />
+//                 &nbsp;Business Firms
+//               </label>
+//             </div>
+//           </div>
+//         </div>
+//         <div>
+//           <label htmlFor="">
+//             <strong>Type Pincode of Recipients</strong>{" "}
+//           </label>
+//         </div>
+//         <div className="search_Container">
+//           <div className="input-wrapper">
+//             <input
+//               type="number"
+//               placeholder="Enter Pincode"
+//               maxLength={6}
+//               value={pincodeInput}
+//               onChange={(e) => setPincodeInput(e.target.value)}
+//             />
+//           </div>
+//           {clrBtn ? (
+//             <button
+//               className="btn btn-primary search_Button"
+//               onClick={clearItems}
+//             >
+//               Clear
+//             </button>
+//           ) : (
+//             <button
+//               className="btn btn-primary search_Button"
+//               onClick={fetchBusinesses}
+//             >
+//               Search
+//             </button>
+//           )}
+//         </div>
+//         {showresults && (
+//           <div className="data_Controls">
+//             <div>
+//               <p>
+//                 <strong>Results Displayed :</strong> {datas.length},
+//               </p>
+//             </div>
+//             <div>
+//               <p>
+//                 <strong>Selected:</strong> {selectedBusinesses.length}
+//               </p>
+//             </div>
+//           </div>
+//         )}
+//       </div>
+//       {loading ? (
+//         <p>Loading...</p>
+//       ) : (
+//         <div>
+//           <div className="result-header">
+//             <label htmlFor="">
+//               <strong>Select Recipients :</strong>
+//             </label>
+//             <br />
+//             <div className="selectAllSection">
+//               <div>
+//                 <label>
+//                   <strong>Select All</strong>{" "}
+//                 </label>
+//               </div>
+//               <div>
+//                 <input
+//                   type="checkbox"
+//                   onChange={handleSelectAllChange}
+//                   checked={selectAll}
+//                 />
+//               </div>
+//             </div>
+
+//             <button className="btn btn-primary mb-2" onClick={sendBatchSMS}>
+//               Send SMS
+//             </button>
+//           </div>
+//           {showresults ? (
+//             <div className="scroll-container">
+//               {datas.length > 0 ? (
+//                 <>
+//                   {datas.map((item) => (
+//                     <div className="card" key={item.id}>
+//                       <div className="card-details">
+//                         <p className="heading-text">
+//                           <strong>{item.businessname}</strong>
+//                         </p>
+//                         <p className="card-para">{item.product}</p>
+//                       </div>
+//                       <div className="checkbox">
+//                         <p>{item.mobileno.slice(0, -5)}xxxxx</p>
+//                         <input
+//                           className="inputCheckbox"
+//                           type="checkbox"
+//                           checked={selectedBusinesses.includes(item)}
+//                           onChange={() => handleCheckboxChange(item)}
+//                         />
+//                       </div>
+//                     </div>
+//                   ))}
+//                 </>
+//               ) : (
+//                 <p>Loading...</p>
+//               )}
+//             </div>
+//           ) : (
+//             <div className="container defaultContainer mt-2">
+//               <p>
+//                 <strong>Your Result Will be Shown Here!!..</strong>
+//               </p>
+//             </div>
+//           )}
+//           <button className="btn btn-primary mt-2" onClick={sendBatchSMS}>
+//             Send SMS
+//           </button>
+//           <p>
+//             <strong>Selected:</strong> {selectedBusinesses.length}
+//           </p>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default Nearbypromotion;
+
+
+
+
+
+
+
+
