@@ -67,6 +67,9 @@ const UserProfile = () => {
     }
   }, [userId, setUserData]); // Add userId and setUser Data as dependencies
 
+
+
+  
   const handleBuyNow = (price) => {
     setSelectedPrice(price);
   };

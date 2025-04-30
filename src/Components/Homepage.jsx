@@ -262,7 +262,7 @@ export default function Homepage() {
                 value={productName}
               />
             </div>
-          )}
+          )}``
         </div>
         {/* Contact Cards */}
         <div className="home_contactcard-div">

@@ -18,7 +18,7 @@ export default function Auth({ children }) {
       alert("Please Enter your Mobile Registered number");
       return;
     }
-    if (password !== "Signpost") {
+    if (password !== "signpost") {
       alert("Invalid Password");
       return;
     }

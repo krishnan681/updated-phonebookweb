@@ -34,7 +34,7 @@ const Nearbypromotion = () => {
   const fetchData = async () => {
     try {
       const response = await fetch(
-        "https://signpostphonebook.in/client_fetch.php"
+        "https://signpostphonebook.in/client_fetch_for_new_database.php"
       );
       if (!response.ok)
         throw new Error(`HTTP Error! Status: ${response.status}`);
@@ -106,34 +106,42 @@ const Nearbypromotion = () => {
       alert("No clients selected!");
       return;
     }
-
+  
     const currentDate = new Date().toISOString().split("T")[0];
-
+  
     const postData = {
-      user_name: userData.bussinessname || userData.person || "Unknown",
+      user_name: userData.businessname || userData.person || "Unknown",
       date: currentDate,
-      pincode: pincodeInput.trim(),
-      product: "",
+      pincode: pincodeInput.trim(), // or product field if needed
+      product: "", // leave this empty if using pincode
       promotion_from: "Nearby Promotion",
       selected_count: selectedBusinesses.length,
     };
-
+  
+    console.log("Sending to backend:", postData);
+  
     axios
       .post(
         "https://signpostphonebook.in/promotion_app/promotion_appliaction.php",
-        postData
+        postData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       )
       .then((response) => {
-        console.log(response.data.Message);
+        console.log("Backend Response:", response.data);
       })
       .catch((error) => console.error("Error sending data:", error));
-
+  
     const selectedNumbers = selectedBusinesses.map((client) => client.mobileno);
     const recipients = selectedNumbers.join(",");
     const smsUri = `sms:${recipients}?body=${encodeURIComponent(customMessage)}`;
-
+  
     window.location.href = smsUri;
   };
+  
 
   return (
     <div className="container">

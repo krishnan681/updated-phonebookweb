@@ -507,6 +507,8 @@ function MediaPartner() {
       setPerson(personName);
     }
   };
+
+
   const handlePopup = (e) => {
     e.preventDefault();
     setShowPopup(false);
@@ -532,12 +534,16 @@ You can use the PHONE BOOK for your business promotion in any desired (Pincode) 
     e.preventDefault();
     setShowPopup1(false);
   };
+
+
   const handleCityName = (e) => {
     const cityName = e.target.value;
     if (/^[a-zA-Z\s]*$/.test(cityName)) {
       setCity(cityName);
     }
   };
+
+  
   const checkMobileNumber = async (mobile) => {
     try {
       const response = await fetch(
